@@ -128,5 +128,16 @@ function handleClick(event) {
 
   const instance = basicLightbox.create(modalMarkup);
 
-  instance.show();
+  const handleImgClick = event => { 
+    if (event.type === 'click') { 
+      // console.log('click');
+        instance.close(() => {
+          document.removeEventListener('click', handleImgClick);
+        });
+    }
+  };
+
+  instance.show(() => { 
+    document.addEventListener('click', handleImgClick);
+  });
 }
