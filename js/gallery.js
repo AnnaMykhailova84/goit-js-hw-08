@@ -91,16 +91,16 @@ initRender();
 
 container.addEventListener('click', handleImgClick);
 
-function handleImgClick(event) {
-  event.preventDefault();
-  const isContainer = event.target.classList.contains('gallery');
+function handleImgClick(event) { 
+  event.preventDefault(); 
+  const imgEl = event.target.closest('img.gallery-image');
 
-  if (isContainer) {
-    console.warn('Click onto container');
-    return;
-  }
-  const dataSource = event.target.closest('.gallery-image').dataset.source;
+  if (!imgEl) return;
+
+  const dataSource = imgEl.dataset.source;
   const image = images.find(image => image.original === dataSource);
+  if (!image) return;
+
   const modalMarkup = `
         <div class="modal">
           <img
@@ -110,18 +110,9 @@ function handleImgClick(event) {
           />
         </div>
       `;
-
+  
   const instance = basicLightbox.create(modalMarkup);
-
-  const handleClick = event => {
-    if (event.type === 'click') {
-      instance.close(() => {
-        document.removeEventListener('click', handleImgClick);
-      });
-    }
-  };
-
-  instance.show(() => {
-    document.addEventListener('click', handleClick);
-  });
+  
+  instance.show();
+  
 }
