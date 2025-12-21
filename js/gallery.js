@@ -64,8 +64,9 @@ const images = [
   },
 ];
 
+const wrapper = document.querySelector('.wrapper');
 const container = document.querySelector('.gallery');
-const modalTemplate = document.querySelector('#js-modal-template');
+// const modalTemplate = document.querySelector('#js-modal-template');
 
 const createGallery = images => {
   return images
@@ -73,8 +74,8 @@ const createGallery = images => {
       return `<li class="gallery-item">
       <a class="gallery-link" href="${image.original}">
       <img class="gallery-image"
-      src="${image.preview}" 
-      data-source="${image.original}" 
+      src="${image.preview}"
+      data-source="${image.original}"
       alt="${image.description}" />
       </a>
       </li>`;
@@ -88,34 +89,18 @@ const initRender = () => {
 
 initRender();
 
-const modalCloneElem = (image, data) => {
-  const img = image.querySelector('img');
-  img.src = data.original;
-  img.alt = data.description;
+container.addEventListener('click', handleImgClick);
 
-  return image;
-};
-
-container.addEventListener('click', handleClick);
-
-function handleClick(event) {
+function handleImgClick(event) {
   event.preventDefault();
-  const targetEl = event.target;
+  const isContainer = event.target.classList.contains('gallery');
 
-  if (targetEl.classList.contains('gallery')) {
-    // console.log('stop');
+  if (isContainer) {
+    console.warn('Click onto container');
     return;
   }
-
-  const dataSource = targetEl.dataset.source;
-  console.log(dataSource);
-
+  const dataSource = event.target.closest('.gallery-image').dataset.source;
   const image = images.find(image => image.original === dataSource);
-
-  const cloneElem = modalTemplate.content.cloneNode(true);
-
-  const cloneModal = modalCloneElem(cloneElem, image);
-
   const modalMarkup = `
         <div class="modal">
           <img
@@ -128,16 +113,15 @@ function handleClick(event) {
 
   const instance = basicLightbox.create(modalMarkup);
 
-  const handleImgClick = event => { 
-    if (event.type === 'click') { 
-      // console.log('click');
-        instance.close(() => {
-          document.removeEventListener('click', handleImgClick);
-        });
+  const handleClick = event => {
+    if (event.type === 'click') {
+      instance.close(() => {
+        document.removeEventListener('click', handleImgClick);
+      });
     }
   };
 
-  instance.show(() => { 
-    document.addEventListener('click', handleImgClick);
+  instance.show(() => {
+    document.addEventListener('click', handleClick);
   });
 }
